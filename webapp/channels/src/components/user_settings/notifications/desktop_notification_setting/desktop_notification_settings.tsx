@@ -41,8 +41,6 @@ type Props = {
 };
 
 type State = {
-    selectedOption: SelectedOption;
-    callsSelectedOption: SelectedOption;
     blurDropdown: boolean;
 };
 
@@ -53,11 +51,7 @@ export default class DesktopNotificationSettings extends React.PureComponent<Pro
 
     constructor(props: Props) {
         super(props);
-        const selectedOption = {value: props.selectedSound, label: props.selectedSound};
-        const callsSelectedOption = {value: props.callsSelectedSound, label: props.callsSelectedSound};
         this.state = {
-            selectedOption,
-            callsSelectedOption,
             blurDropdown: false,
         };
         this.dropdownSoundRef = React.createRef();
@@ -96,7 +90,6 @@ export default class DesktopNotificationSettings extends React.PureComponent<Pro
     setDesktopNotificationSound: ReactSelect['onChange'] = (selectedOption: ValueType<SelectedOption>): void => {
         if (selectedOption && 'value' in selectedOption) {
             this.props.setParentState('desktopNotificationSound', selectedOption.value);
-            this.setState({selectedOption});
             NotificationSounds.tryNotificationSound(selectedOption.value);
         }
     };
@@ -104,7 +97,6 @@ export default class DesktopNotificationSettings extends React.PureComponent<Pro
     setCallsNotificationRing: ReactSelect['onChange'] = (selectedOption: ValueType<SelectedOption>): void => {
         if (selectedOption && 'value' in selectedOption) {
             this.props.setParentState('callsNotificationSound', selectedOption.value);
-            this.setState({callsSelectedOption: selectedOption});
             NotificationSounds.tryNotificationRing(selectedOption.value);
         }
     };
@@ -138,6 +130,8 @@ export default class DesktopNotificationSettings extends React.PureComponent<Pro
         let threadsNotificationSelection;
         let callsSection;
         let callsNotificationSelection;
+        const selectedOption: SelectedOption = {value: this.props.selectedSound, label: this.props.selectedSound};
+        const callsSelectedOption: SelectedOption = {value: this.props.callsSelectedSound, label: this.props.callsSelectedSound};
         if (this.props.activity !== NotificationLevels.NONE) {
             const soundRadio = [false, false];
             if (this.props.sound === 'false') {
@@ -160,7 +154,7 @@ export default class DesktopNotificationSettings extends React.PureComponent<Pro
                         options={options}
                         clearable={false}
                         onChange={this.setDesktopNotificationSound}
-                        value={this.state.selectedOption}
+                        defaultValue={selectedOption}
                         isSearchable={false}
                         ref={this.dropdownSoundRef}
                     /></div>);
@@ -188,7 +182,7 @@ export default class DesktopNotificationSettings extends React.PureComponent<Pro
                             options={callsOptions}
                             clearable={false}
                             onChange={this.setCallsNotificationRing}
-                            value={this.state.callsSelectedOption}
+                            defaultValue={callsSelectedOption}
                             isSearchable={false}
                             ref={this.callsDropdownRef}
                         /></div>);
